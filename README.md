@@ -29,6 +29,71 @@ Does not use reflection and tries to handle everything with good old classes and
 - `equals(mixed $value, bool $strict = false): EqualsRule`
 - `notEqual(mixed $value, bool $strict = false): NotEqual`
 
+### Example
+```php
+class AddressDto extends Dto
+{
+    private string $city;
+    private string $street;
+    private int $number;
+    
+    public static function fields(): array
+    {
+        return [
+            'city' => new Field('city', Type::string(true), rules: [Rule::in(['London', 'Paris', 'New York'])]),
+            'street' => new Field('street', Type::string(true), rules: [Rule::min(5)]),
+            'number' => new Field('number', Type::int(true), rules: [Rule::min(1), Rule::max(100)]),
+        ];
+    }
+    
+    public function getCity(): string
+    {
+        return $this->city;
+    }
+    
+    public function getStreet(): string
+    {
+        return $this->street;
+    }
+    
+    public function getNumber(): int
+    {
+        return $this->number;
+    }
+}
+
+class UserDto extends Dto
+{
+    private string $name;
+    private int $age;
+    private AddressDto $address;
+    
+    public static function fields(): array
+    {
+        return [
+            'name' => new Field('name', Type::string(true), rules: [Rule::min(5)]),
+            'age' => new Field('age', Type::int(true), rules: [Rule::min(18)]),
+            'address' => new Field('address', Type::embedded(AddressDto::class)),
+        ];
+    }
+    
+    public function getName(): string
+    {
+        return $this->name;
+    }
+    
+    public function getAge(): int
+    {
+        return $this->age;
+    }
+    
+    public function getAddress(): AddressDto
+    {
+        return $this->address;
+    }
+}
+```
+
 ### Notes
 - Do not set readonly or private attributes for your DTO classes as the parent constructor which handles the hydration of DTOs cannot access them.
 
