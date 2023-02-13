@@ -1,0 +1,21 @@
+{
+    "$schema": "vendor/infection/infection/resources/schema.json",
+    "source": {
+        "directories": [
+            "src"
+        ]
+    },
+    "mutators": {
+        "@default": true,
+        "TrueValue": {
+            "ignore": [
+                "RahimiAli\\PhpDto\\Rules\\*::__construct",
+            ]
+        },
+        "FalseValue": {
+            "ignore": [
+                "RahimiAli\\PhpDto\\Rules\\*::__construct"
+            ]
+        }
+    }
+}

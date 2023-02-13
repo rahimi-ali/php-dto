@@ -1,0 +1,45 @@
+{
+    "name": "rahimi-ali/php-dto",
+    "description": "Data Transfer Objects for PHP",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "RahimiAli\\PhpDto\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "RahimiAli\\PhpDto\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ali Rahimi",
+            "email": "arahimihajiabadi@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "psr/http-message": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0",
+        "friendsofphp/php-cs-fixer": "^3.14",
+        "phpstan/phpstan": "^1.9",
+        "infection/infection": "^0.26.19"
+    },
+    "scripts": {
+        "test": "php vendor/bin/phpunit --colors",
+        "coverage": "php vendor/bin/phpunit --colors --coverage-text",
+        "cs-fix": "php vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --allow-risky=yes",
+        "cs-check": "php vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --allow-risky=yes --dry-run",
+        "analyse": "php vendor/bin/phpstan analyse",
+        "infection": "php vendor/bin/infection --show-mutations --threads=8"
+    },
+    "config": {
+        "allow-plugins": {
+            "infection/extension-installer": false
+        }
+    }
+}
