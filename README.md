@@ -3,15 +3,17 @@
 
 DTOs can be used to transform Incoming Psr7 server requests, json and random arrays to typed classes with validation built in.
 
-Does not use reflection and tries to handle everything with good old classes and methods!
+Does not use reflection and handles everything with good old classes and methods!
 
 ### Types
 - `int(bool $strict = false): IntType`
 - `float(bool $strict = false): FloatType`
 - `string(bool $strict = false): StringType`
 - `bool(bool $strict = false): BoolType`
+- `datetime(string $format = DateTimeInterface::ATOM, string|null $timezone = null, bool $immutable = true): DateTimeType`
 - `embedded(string $class): EmbeddedType`
 - `dynamicEmbedded(string|Closure $discriminator, array $types = []): DynamicEmbeddedType`
+- `collection(TypeInterface $type): CollectionType`
 
 ### Rules
 - `int(bool $strict = false): IntRule` Automatically added when declaring a field with IntType
@@ -95,8 +97,20 @@ class UserDto extends Dto
 ```
 
 ### Notes
-- Do not set readonly or private attributes for your DTO classes as the parent constructor which handles the hydration of DTOs cannot access them.
+- Because reflection and magic methods were not used private and readonly properties
+cannot be used because the parent class cannot access them by default. If you really want private and readonly
+properties, override the `setProperty` method in you DTO:
+```php
+protected function setProperty(string $property, mixed $value): void
+{
+    $this->{$property} = $value;
+}
+```
 
+### Standards
+- Code Coverage: 100%
+- PHPStan Level: 9
+- Infection MSI: 94%
 
 ### License
 MIT

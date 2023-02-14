@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace RahimiAli\PhpDto\Facades;
 
 use Closure;
+use DateTimeInterface;
 use RahimiAli\PhpDto\Dto;
+use RahimiAli\PhpDto\TypeInterface;
 use RahimiAli\PhpDto\Types\IntType;
 use RahimiAli\PhpDto\Types\BoolType;
 use RahimiAli\PhpDto\Types\FloatType;
 use RahimiAli\PhpDto\Types\StringType;
+use RahimiAli\PhpDto\Types\DateTimeType;
 use RahimiAli\PhpDto\Types\EmbeddedType;
+use RahimiAli\PhpDto\Types\CollectionType;
 use RahimiAli\PhpDto\Types\DynamicEmbeddedType;
 use PHPUnit\Framework\Attributes\CodeCoverageIgnore;
 
@@ -37,6 +41,14 @@ class Type
         return new BoolType($strict);
     }
 
+    public static function datetime(
+        string $format = DateTimeInterface::ATOM,
+        string|null $timezone = null,
+        bool $immutable = true
+    ): DateTimeType {
+        return new DateTimeType($format, $timezone, $immutable);
+    }
+
     /**
      * @template T of Dto
      * @param class-string<T> $class
@@ -54,5 +66,10 @@ class Type
     public static function dynamicEmbedded(string|Closure $discriminator, array $types = []): DynamicEmbeddedType
     {
         return new DynamicEmbeddedType($discriminator, $types);
+    }
+
+    public static function collection(TypeInterface $type): CollectionType
+    {
+        return new CollectionType($type);
     }
 }

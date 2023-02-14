@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RahimiAli\PhpDto\Tests\Unit\Types;
 
 use DateTime;
 use DateTimeImmutable;
-use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use RahimiAli\PhpDto\Support\ValidationError;
+use PHPUnit\Framework\Attributes\Test;
 use RahimiAli\PhpDto\Types\DateTimeType;
 use RahimiAli\PhpDto\ValidationException;
+use RahimiAli\PhpDto\Support\ValidationError;
 
 class DateTimeTypeTest extends TestCase
 {
@@ -18,7 +20,7 @@ class DateTimeTypeTest extends TestCase
         $type = new DateTimeType('Y-m-d');
 
         try {
-            $type->cast(['foo' => 'bar']);
+            $type->cast(12);
         } catch (ValidationException $e) {
             $this->assertEquals(['' => [new ValidationError('string')]], $e->getErrors());
 

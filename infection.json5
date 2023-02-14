@@ -10,11 +10,13 @@
         "TrueValue": {
             "ignore": [
                 "RahimiAli\\PhpDto\\Rules\\*::__construct",
+                "RahimiAli\\PhpDto\\Types\\*::__construct"
             ]
         },
         "FalseValue": {
             "ignore": [
-                "RahimiAli\\PhpDto\\Rules\\*::__construct"
+                "RahimiAli\\PhpDto\\Rules\\*::__construct",
+                "RahimiAli\\PhpDto\\Types\\*::__construct"
             ]
         }
     }

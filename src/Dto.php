@@ -15,6 +15,30 @@ abstract class Dto
 {
     /**
      * @param array<string, array<mixed>|bool|float|int|object|string|null> $data
+     * @return array<string, Field>
+     */
+    abstract public static function fields(array $data): array;
+
+    /**
+     * @param array<string, array<mixed>|bool|float|int|object|string|null> $data
+     * @return array<string, array<mixed>|bool|float|int|object|string|null>
+     */
+    protected function beforeFill(array $data): array
+    {
+        return $data;
+    }
+
+    protected function afterFill(): void
+    {
+    }
+
+    protected function setProperty(string $property, mixed $value): void
+    {
+        $this->{$property} = $value;
+    }
+
+    /**
+     * @param array<string, array<mixed>|bool|float|int|object|string|null> $data
      * @throws ValidationException
      */
     final public function __construct(array $data = [])
@@ -28,7 +52,7 @@ abstract class Dto
 
             if ($inputValue !== null) {
                 try {
-                    $this->{$fieldDefinition->property} = $fieldDefinition->type->cast($inputValue);
+                    $this->setProperty($fieldDefinition->property, $fieldDefinition->type->cast($inputValue));
                 } catch (ValidationException $e) {
                     $errors = $errors + array_combine(
                         array_map(
@@ -50,7 +74,7 @@ abstract class Dto
                 if (!$fieldDefinition->nullable) {
                     $errors[$key][] = new ValidationError('required');
                 } else {
-                    $this->{$fieldDefinition->property} = $fieldDefinition->default;
+                    $this->setProperty($fieldDefinition->property, $fieldDefinition->default);
                 }
             }
         }
@@ -60,25 +84,6 @@ abstract class Dto
         }
 
         $this->afterFill();
-    }
-
-    /**
-     * @param array<string, array<mixed>|bool|float|int|object|string|null> $data
-     * @return array<string, Field>
-     */
-    abstract public static function fields(array $data): array;
-
-    /**
-     * @param array<string, array<mixed>|bool|float|int|object|string|null> $data
-     * @return array<string, array<mixed>|bool|float|int|object|string|null>
-     */
-    public function beforeFill(array $data): array
-    {
-        return $data;
-    }
-
-    public function afterFill(): void
-    {
     }
 
     public static function fromJson(string $json): static
@@ -95,7 +100,7 @@ abstract class Dto
             $contentType = $contentType ? $contentType[0] : null;
 
             if ($contentType === 'application/json') {
-                return static::fromJson((string) $request->getBody()->getContents());
+                return static::fromJson($request->getBody()->getContents());
             } elseif ($contentType === 'application/x-www-form-urlencoded') {
                 return new static($request->getParsedBody()); /** @phpstan-ignore-line */
             }

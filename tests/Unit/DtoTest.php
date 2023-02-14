@@ -126,7 +126,7 @@ class DtoTest extends TestCase
         $input = ['foo' => 1, 'bar' => true];
 
         $request = $this->createStub(ServerRequestInterface::class);
-        $request->method('getMethod')->willReturn('GET');
+        $request->method('getMethod')->willReturn('get');
         $request->method('getQueryParams')->willReturn($input);
 
         $dto = DtoTestDto::fromServerRequest($request);
@@ -141,7 +141,7 @@ class DtoTest extends TestCase
         $input = ['foo' => 1, 'bar' => true];
 
         $request = $this->createStub(ServerRequestInterface::class);
-        $request->method('getMethod')->willReturn('POST');
+        $request->method('getMethod')->willReturn('post');
         $request->method('getHeader')->willReturn(['application/x-www-form-urlencoded']);
         $request->method('getParsedBody')->willReturn($input);
 
@@ -155,7 +155,7 @@ class DtoTest extends TestCase
     public function throwsExceptionIfServerRequestCannotBeDeserialized(): void
     {
         $request = $this->createStub(ServerRequestInterface::class);
-        $request->method('getMethod')->willReturn('POST');
+        $request->method('getMethod')->willReturn('post');
         $request->method('getHeader')->willReturn(['whatever']);
 
         $this->expectException(InvalidArgumentException::class);
@@ -192,6 +192,17 @@ class DtoTest extends TestCase
 
         $this->assertSame(666, $dto->foo);
     }
+
+    #[Test]
+    public function setPropertyCanBeOverwrittenToAllowPrivateAndReadonlyProperties(): void
+    {
+        $input = ['foo' => 1, 'bar' => true];
+
+        $dto = new DtoTestDtoWithPrivateProperty($input);
+
+        $this->assertSame(1, $dto->getFoo());
+        $this->assertSame(true, $dto->baz);
+    }
 }
 
 class DtoTestDto extends Dto
@@ -226,17 +237,42 @@ class DtoTestDtoWithHooks extends DtoTestDto
         return parent::fields($data);
     }
 
-    public function beforeFill(array $data): array
+    protected function beforeFill(array $data): array
     {
         $data['foo']++;
 
         return $data;
     }
 
-    public function afterFill(): void
+    protected function afterFill(): void
     {
         if (isset($this->baz)) {
             $this->baz = !$this->baz;
         }
+    }
+}
+
+class DtoTestDtoWithPrivateProperty extends Dto
+{
+    private int $foo;
+
+    public readonly bool $baz;
+
+    public static function fields(array $data): array
+    {
+        return [
+            'foo' => new Field('foo', new IntType()),
+            'bar' => new Field('baz', new BoolType(), nullable: true, default: true),
+        ];
+    }
+
+    protected function setProperty(string $property, mixed $value): void
+    {
+        $this->{$property} = $value;
+    }
+
+    public function getFoo(): int
+    {
+        return $this->foo;
     }
 }
