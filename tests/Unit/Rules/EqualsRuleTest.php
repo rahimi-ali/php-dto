@@ -93,7 +93,8 @@ class EqualsRuleTest extends TestCase
             '{"foo": "bar"} === {"foo": "bar"}' => [$obj1, true, $obj2, true, null],
             '{"foo": "bar"} == {"foo": "bar"}' => [$obj1, false, $obj2, true, null],
             '{"foo": "bar"} !== {"foo": "baz"}' => [$obj1, true, $obj3, false, '{"foo":"bar"}'],
-            '{"foo": "bar"} A= {"foo": "baz"}' => [$obj1, false, $obj3, false, '{"foo":"bar"}'],
+            '{"foo": "bar"} != {"foo": "baz"}' => [$obj1, false, $obj3, false, '{"foo":"bar"}'],
+            '1 !== [1, 2]' => [[1, 2], true, 1, false, '[1,2]'],
         ];
     }
 }

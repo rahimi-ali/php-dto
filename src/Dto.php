@@ -28,13 +28,13 @@ abstract class Dto
                 try {
                     $this->{$fieldDefinition->property} = $fieldDefinition->type->cast($inputValue);
                 } catch (ValidationException $e) {
-                    $errors = [...$errors, ...array_combine(
+                    $errors = $errors + array_combine(
                         array_map(
                             fn ($nestedKey) => $nestedKey === '' ? $key : "$key.$nestedKey",
                             array_keys($e->getErrors())
                         ),
                         $e->getErrors()
-                    )];
+                    );
 
                     continue;
                 }

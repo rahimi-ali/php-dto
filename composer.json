@@ -32,8 +32,8 @@
     "scripts": {
         "test": "php vendor/bin/phpunit --colors",
         "coverage": "php vendor/bin/phpunit --colors --coverage-text",
-        "cs-fix": "php vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --allow-risky=yes",
-        "cs-check": "php vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --allow-risky=yes --dry-run",
+        "cs-fix": "PHP_CS_FIXER_IGNORE_ENV=1 php vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --allow-risky=yes",
+        "cs-check": "PHP_CS_FIXER_IGNORE_ENV=1 php vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --allow-risky=yes --dry-run",
         "analyse": "php vendor/bin/phpstan analyse",
         "infection": "php vendor/bin/infection --show-mutations --threads=8"
     },
