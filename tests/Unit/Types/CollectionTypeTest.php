@@ -104,7 +104,7 @@ class CollectionTypeTest extends TestCase
 
 class CollectionTypeTestEmbeddedDto extends Dto
 {
-    public static function fields(): array
+    public static function fields(array $data): array
     {
         return [
             'id' => new Field('id', new IntType(true), rules: [new MinRule(1)]),

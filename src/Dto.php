@@ -21,7 +21,9 @@ abstract class Dto
     {
         $errors = [];
 
-        foreach ($this->fields() as $key => $fieldDefinition) {
+        $data = $this->beforeFill($data);
+
+        foreach ($this->fields($data) as $key => $fieldDefinition) {
             $inputValue = $data[$key] ?? null;
 
             if ($inputValue !== null) {
@@ -56,12 +58,28 @@ abstract class Dto
         if (count($errors) > 0) {
             throw new ValidationException($errors);
         }
+
+        $this->afterFill();
     }
 
     /**
+     * @param array<string, array<mixed>|bool|float|int|object|string|null> $data
      * @return array<string, Field>
      */
-    abstract public static function fields(): array;
+    abstract public static function fields(array $data): array;
+
+    /**
+     * @param array<string, array<mixed>|bool|float|int|object|string|null> $data
+     * @return array<string, array<mixed>|bool|float|int|object|string|null>
+     */
+    public function beforeFill(array $data): array
+    {
+        return $data;
+    }
+
+    public function afterFill(): void
+    {
+    }
 
     public static function fromJson(string $json): static
     {

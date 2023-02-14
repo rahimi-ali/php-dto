@@ -238,7 +238,7 @@ class DynamicEmbeddedTypeTestPhoneDto extends Dto
 {
     public string $number;
 
-    public static function fields(): array
+    public static function fields(array $data): array
     {
         return [
             'phoneNumber' => new Field('number', new StringType()),
@@ -250,7 +250,7 @@ class DynamicEmbeddedTypeTestEmailDto extends Dto
 {
     public string $email;
 
-    public static function fields(): array
+    public static function fields(array $data): array
     {
         return [
             'email' => new Field('email', new StringType()),
@@ -264,7 +264,7 @@ class DynamicEmbeddedTypeTestUserDto extends Dto
     public string $lastName;
     public DynamicEmbeddedTypeTestPhoneDto|DynamicEmbeddedTypeTestEmailDto $contact;
 
-    public static function fields(): array
+    public static function fields(array $data): array
     {
         return [
             'firstName' => new Field('firstName', new StringType()),
@@ -289,7 +289,7 @@ class DynamicEmbeddedTypeTestUserDtoClosure extends Dto
     public string $lastName;
     public DynamicEmbeddedTypeTestPhoneDto|DynamicEmbeddedTypeTestEmailDto $contact;
 
-    public static function fields(): array
+    public static function fields(array $data): array
     {
         return [
             'firstName' => new Field('firstName', new StringType()),

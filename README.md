@@ -37,7 +37,7 @@ class AddressDto extends Dto
     private string $street;
     private int $number;
     
-    public static function fields(): array
+    public static function fields(array $data): array
     {
         return [
             'city' => new Field('city', Type::string(true), rules: [Rule::in(['London', 'Paris', 'New York'])]),
@@ -68,7 +68,7 @@ class UserDto extends Dto
     private int $age;
     private AddressDto $address;
     
-    public static function fields(): array
+    public static function fields(array $data): array
     {
         return [
             'name' => new Field('name', Type::string(true), rules: [Rule::min(5)]),

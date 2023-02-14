@@ -26,7 +26,7 @@ class DtoTest extends TestCase
     {
         $input = ['foo' => 1, 'bar' => true];
 
-        $dto = new TestDto($input);
+        $dto = new DtoTestDto($input);
 
         $this->assertSame(1, $dto->foo);
         $this->assertSame(true, $dto->getBaz());
@@ -37,7 +37,7 @@ class DtoTest extends TestCase
     {
         $input = ['foo' => 1];
 
-        $dto = new TestDto($input);
+        $dto = new DtoTestDto($input);
 
         $this->assertSame(1, $dto->foo);
         $this->assertSame(true, $dto->getBaz());
@@ -49,7 +49,7 @@ class DtoTest extends TestCase
         $input = ['bar' => true];
 
         try {
-            new TestDto($input);
+            new DtoTestDto($input);
         } catch (ValidationException $exception) {
             $this->assertEquals(['foo' => [new ValidationError('required')]], $exception->getErrors());
 
@@ -65,7 +65,7 @@ class DtoTest extends TestCase
         $input = ['foo' => 1, 'bar' => 'not a bool'];
 
         try {
-            new TestDto($input);
+            new DtoTestDto($input);
         } catch (ValidationException $exception) {
             $this->assertEquals(['bar' => [new ValidationError('bool')]], $exception->getErrors());
 
@@ -81,7 +81,7 @@ class DtoTest extends TestCase
         $input = ['foo' => 12, 'bar' => false];
 
         try {
-            new TestDto($input);
+            new DtoTestDto($input);
         } catch (ValidationException $exception) {
             $this->assertEquals(['foo' => [new ValidationError('max', ['max' => 10])]], $exception->getErrors());
 
@@ -96,7 +96,7 @@ class DtoTest extends TestCase
     {
         $input = ['foo' => 1, 'bar' => true];
 
-        $dto = TestDto::fromJson(json_encode($input));
+        $dto = DtoTestDto::fromJson(json_encode($input));
 
         $this->assertSame(1, $dto->foo);
         $this->assertSame(true, $dto->getBaz());
@@ -114,7 +114,7 @@ class DtoTest extends TestCase
         $body->method('getContents')->willReturn(json_encode($input));
         $request->method('getBody')->willReturn($body);
 
-        $dto = TestDto::fromServerRequest($request);
+        $dto = DtoTestDto::fromServerRequest($request);
 
         $this->assertSame(1, $dto->foo);
         $this->assertSame(true, $dto->getBaz());
@@ -129,7 +129,7 @@ class DtoTest extends TestCase
         $request->method('getMethod')->willReturn('GET');
         $request->method('getQueryParams')->willReturn($input);
 
-        $dto = TestDto::fromServerRequest($request);
+        $dto = DtoTestDto::fromServerRequest($request);
 
         $this->assertSame(1, $dto->foo);
         $this->assertSame(true, $dto->getBaz());
@@ -145,7 +145,7 @@ class DtoTest extends TestCase
         $request->method('getHeader')->willReturn(['application/x-www-form-urlencoded']);
         $request->method('getParsedBody')->willReturn($input);
 
-        $dto = TestDto::fromServerRequest($request);
+        $dto = DtoTestDto::fromServerRequest($request);
 
         $this->assertSame(1, $dto->foo);
         $this->assertSame(true, $dto->getBaz());
@@ -160,16 +160,46 @@ class DtoTest extends TestCase
 
         $this->expectException(InvalidArgumentException::class);
 
-        TestDto::fromServerRequest($request);
+        DtoTestDto::fromServerRequest($request);
+    }
+
+    #[Test]
+    public function beforeFillHookCanModifyInput(): void
+    {
+        $input = ['foo' => 1, 'bar' => true];
+
+        $dto = new DtoTestDtoWithHooks($input);
+
+        $this->assertSame(2, $dto->foo);
+    }
+
+    #[Test]
+    public function afterFillHookCanModifyDto(): void
+    {
+        $input = ['foo' => 1, 'bar' => true];
+
+        $dto = new DtoTestDtoWithHooks($input);
+
+        $this->assertSame(false, $dto->getBaz());
+    }
+
+    #[Test]
+    public function rawDataIsPassedToFieldsMethod(): void
+    {
+        $input = ['foo' => 665];
+
+        $dto = new DtoTestDtoWithHooks($input);
+
+        $this->assertSame(666, $dto->foo);
     }
 }
 
-class TestDto extends Dto
+class DtoTestDto extends Dto
 {
     public int $foo;
     protected bool $baz;
 
-    public static function fields(): array
+    public static function fields(array $data): array
     {
         return [
             'foo' => new Field('foo', new IntType(), rules: [new MaxRule(10)]),
@@ -180,5 +210,33 @@ class TestDto extends Dto
     public function getBaz(): bool
     {
         return $this->baz;
+    }
+}
+
+class DtoTestDtoWithHooks extends DtoTestDto
+{
+    public static function fields(array $data): array
+    {
+        if ($data['foo'] === 666) {
+            return [
+                'foo' => new Field('foo', new IntType(), rules: [new MaxRule(666)]),
+            ];
+        }
+
+        return parent::fields($data);
+    }
+
+    public function beforeFill(array $data): array
+    {
+        $data['foo']++;
+
+        return $data;
+    }
+
+    public function afterFill(): void
+    {
+        if (isset($this->baz)) {
+            $this->baz = !$this->baz;
+        }
     }
 }

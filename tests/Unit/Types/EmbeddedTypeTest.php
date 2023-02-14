@@ -108,7 +108,7 @@ class EmbeddedTypeTestAddressDto extends Dto
     public string $country;
     public string $street;
 
-    public static function fields(): array
+    public static function fields(array $data): array
     {
         return [
             'country' => new Field('country', new StringType(), rules: [new InRule(['US', 'CA'])]),
@@ -123,7 +123,7 @@ class EmbeddedTypeTestUserDto extends Dto
     public string $lastName;
     public EmbeddedTypeTestAddressDto $address;
 
-    public static function fields(): array
+    public static function fields(array $data): array
     {
         return [
             'firstName' => new Field('firstName', new StringType(), rules: [new MinLengthRule(3)]),
