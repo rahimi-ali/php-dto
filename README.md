@@ -5,6 +5,11 @@ DTOs can be used to transform Incoming Psr7 server requests, json and random arr
 
 Does not use reflection and handles everything with good old classes and methods!
 
+### Install
+```sh
+composer require rahimi-ali/php-dto
+```
+
 ### Types
 - `int(bool $strict = false): IntType`
 - `float(bool $strict = false): FloatType`
